@@ -3,7 +3,7 @@ Search Component
 
 */
 
-import React, { ChangeEvent, FormEvent, JSX, SyntheticEvent } from 'react'
+import React, { ChangeEvent, JSX } from 'react'
 
 interface Props {
     search: string | undefined;

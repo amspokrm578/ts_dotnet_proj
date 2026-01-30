@@ -1,8 +1,9 @@
-import React, { JSX, SyntheticEvent } from 'react';
+import React, { JSX } from 'react';
 import './Card.css';
 import {StockQuoteApiResponse} from '../../Constants/company';
 import { COMPANY_DOMAINS } from '../../Constants/companyDomain';
 import AddPortfolio from '../Portfolio/AddPortfolio/AddPortfolio';
+import { Link } from 'react-router-dom';
 
 
 interface Props {
@@ -30,7 +31,7 @@ const Card : React.FC<Props> = ({id, searchResult, onPortfolioCreate}: Props) : 
         alt={`${searchResult.name} logo`}
       />
       <div className="details">
-        <h2>{searchResult.name} ({searchResult.symbol})</h2>
+        <Link to={`/company/${searchResult.symbol}`}>{searchResult.name} ({searchResult.symbol})</Link>
         <p>${searchResult.currency}</p>
       </div>
       <p className="info">{searchResult.exchange} - {searchResult.mic_code}</p>
