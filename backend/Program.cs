@@ -27,6 +27,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register services
 builder.Services.AddHttpClient<IStockService, StockService>();
 builder.Services.AddScoped<IPortfolioService, PortfolioService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 var app = builder.Build();
 
@@ -129,6 +130,38 @@ app.MapDelete("/api/portfolio/{symbol}", async (
     return Results.NoContent();
 })
 .WithName("DeletePortfolio")
+.WithOpenApi();
+
+// Chat Endpoint
+app.MapPost("/api/chat", async (
+    HttpRequest request,
+    IChatService chatService) =>
+{
+    try
+    {
+        var body = await new StreamReader(request.Body).ReadToEndAsync();
+        var json = System.Text.Json.JsonSerializer.Deserialize<System.Text.Json.JsonElement>(body);
+        
+        if (!json.TryGetProperty("message", out var messageElement))
+        {
+            return Results.BadRequest(new { error = "Message is required" });
+        }
+
+        var userMessage = messageElement.GetString();
+        if (string.IsNullOrWhiteSpace(userMessage))
+        {
+            return Results.BadRequest(new { error = "Message cannot be empty" });
+        }
+
+        var response = await chatService.GetChatResponseAsync(userMessage);
+        return Results.Ok(new { response });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { error = "Invalid request format", details = ex.Message });
+    }
+})
+.WithName("Chat")
 .WithOpenApi();
 
 app.Run();
